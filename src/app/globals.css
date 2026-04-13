@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FDFBF7; /* warm off-white */
+  --foreground: #1A1A19; /* deep charcoal */
+  
+  --primary-lavender: #7C69EF;
+  --primary-teal: #3ABFB1;
+  --accent-coral: #FF7B6B;
+  
+  --card: #FFFFFF;
+  --border: #E2E2E0;
+  
+  --radius-xl: 2rem;
+  --radius-2xl: 3rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-primary-lavender: var(--primary-lavender);
+  --color-primary-teal: var(--primary-teal);
+  --color-accent-coral: var(--accent-coral);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile safe areas (notched devices, home indicator) */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Premium UI Utilities */
+
+.glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-dark {
+  background: rgba(44, 44, 42, 0.05);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.shadow-premium {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-glow-lavender {
+  box-shadow: 0 0 30px rgba(124, 105, 239, 0.15);
+}
+
+.animated-gradient {
+  background: linear-gradient(-45deg, #fdfbf7, #f7f1ff, #f0ffff, #fff5f2);
+  background-size: 300% 300%;
+  animation: gradient-shift 20s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.serif {
+  font-family: 'Times New Roman', serif; /* fallback for serif aesthetic */
+}
+
+/* Hide scrollbars but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth transitions for all interactive elements */
+a, button, input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String?
+  role         Role     @default(USER)
+  avatarUrl    String?
+  isAnonymous  Boolean  @default(false)
+  location     String?
+  createdAt    DateTime @default(now())
+  counselor    Counselor?
+  chatSessions ChatSession[]
+  moodEntries  MoodEntry[]
+  journalEntries JournalEntry[]
+}
+
+enum Role {
+  USER
+  COUNSELOR
+}
+
+model Counselor {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  specialization    String
+  bio               String?
+  isOnline          Boolean @default(false)
+  isVerified        Boolean @default(false)
+  availabilitySchedule Json?
+  user              User     @relation(fields: [userId], references: [id])
+  chatSessions      ChatSession[]
+}
+
+model ChatSession {
+  id        String   @id @default(uuid())
+  userId    String
+  counselorId String?
+  status    SessionStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  counselor Counselor? @relation(fields: [counselorId], references: [id])
+  messages  Message[]
+}
+
+enum SessionStatus {
+  ACTIVE
+  CLOSED
+  REQUESTED
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  sessionId String
+  senderId  String
+  content   String
+  type      MessageType @default(TEXT)
+  createdAt DateTime @default(now())
+  session   ChatSession @relation(fields: [sessionId], references: [id])
+}
+
+enum MessageType {
+  TEXT
+  BOT
+  SYSTEM
+}
+
+model MoodEntry {
+  id        String   @id @default(uuid())
+  userId    String
+  moodScore Int
+  emoji     String
+  note      String?
+  createdAt DateTime @default(now())
+  user      User @relation(fields: [userId], references: [id])
+}
+
+model JournalEntry {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  user      User @relation(fields: [userId], references: [id])
+}
+
+model Helpline {
+  id        String   @id @default(uuid())
+  countryCode String
+  name      String
+  number    String
+  forType   HelplineType
+}
+
+enum HelplineType {
+  SUICIDE
+  ANXIETY
+  GENERAL
+}
