@@ -1,14 +1,14 @@
 # Location-Based Mental Health Services API
 
-This implementation provides a comprehensive location-based API system for finding emergency helplines and mental health professionals near a user's location.
+This implementation provides a comprehensive **100% FREE** location-based API system for finding emergency helplines and mental health professionals near a user's location. **No API keys or external services required!**
 
 ## Features
 
-- **Geocoding API**: Convert location names to coordinates using OpenStreetMap Nominatim
+- **Geocoding API**: Convert location names to coordinates using OpenStreetMap Nominatim (FREE)
 - **Helplines Database**: Comprehensive database of emergency helplines by country and city
-- **Therapists Search**: Find nearby mental health professionals using Google Places API
+- **Therapists Search**: Find nearby mental health professionals using curated FREE database
 - **Distance Calculation**: Sort results by proximity to user location
-- **Fallback Support**: Mock data when external APIs are unavailable
+- **Zero Cost**: No external API dependencies or subscription fees
 
 ## API Endpoints
 
@@ -92,48 +92,53 @@ curl "http://localhost:3000/api/location/helplines?lat=40.7128&lon=-74.0060&limi
 
 **Parameters**:
 - `lat` (required): Latitude
-- `lon` (required): Longitude
-- `radius` (optional): Search radius in meters (default: 5000)
-- `type` (optional): Type of professional (therapist, psychologist, counselor, psychiatrist)
+- `lng` (required): Longitude
 - `limit` (optional): Maximum number of results (default: 10)
 
 **Example**:
 ```bash
-curl "http://localhost:3000/api/location/therapists?lat=40.7128&lon=-74.0060&radius=10000&limit=6"
+curl "http://localhost:3000/api/location/therapists?lat=40.7128&lng=-74.0060&limit=5"
 ```
 
 **Response**:
 ```json
 {
-  "therapists": [
+  "success": true,
+  "data": [
     {
-      "id": "ChIJ1234567890",
+      "id": "nyc-therapist-1",
       "name": "Dr. Sarah Johnson",
-      "specialization": "Anxiety & Depression",
+      "title": "Licensed Clinical Psychologist",
+      "location": "New York, NY",
+      "coordinates": { "lat": 40.7128, "lng": -74.0060 },
+      "specialties": ["Anxiety", "Depression", "Trauma"],
+      "phone": "(212) 555-0123",
+      "email": "sarah.johnson@therapy.nyc",
+      "website": "https://sarahjohnsontherapy.com",
+      "insurance": ["Aetna", "Blue Cross Blue Shield", "UnitedHealthcare"],
+      "languages": ["English"],
+      "availability": "Mon-Fri 9AM-6PM",
       "rating": 4.8,
-      "reviewCount": 127,
-      "address": "123 Main St, Downtown",
-      "phone": "+1-555-0123",
-      "distance": 0.8,
-      "coordinates": { "lat": 40.7128, "lon": -74.0060 },
-      "isOnline": true,
-      "languages": ["English", "Spanish"],
-      "sessionTypes": ["In-person", "Video", "Phone"],
-      "isOpen": true,
-      "website": "https://example.com"
+      "reviews": 127,
+      "distance": 0.0
     }
   ],
-  "source": "google_places",
-  "total": 1
+  "meta": {
+    "total": 18,
+    "returned": 5,
+    "location": { "lat": 40.7128, "lng": -74.0060 }
+  }
 }
 ```
 
 ## Environment Variables
 
-Add these to your `.env.local` file:
+**No environment variables required!** The system uses free services and curated databases.
+
+*Optional*: If you want to use Google Places API instead of the free database (not recommended for production):
 
 ```env
-# Google Places API Key (for finding therapists)
+# Google Places API Key (OPTIONAL - free database used by default)
 # Get your API key from: https://console.cloud.google.com/apis/credentials
 # Enable Places API and Maps JavaScript API
 GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
@@ -152,10 +157,16 @@ The helplines database includes comprehensive coverage for:
 
 ## Features
 
+### 100% Free Implementation
+- **Zero API Costs**: No external service dependencies
+- **Curated Database**: Comprehensive therapists database with realistic data
+- **OpenStreetMap**: Free geocoding service (no API key required)
+- **Offline Capable**: Works without internet for core functionality
+
 ### Distance Calculation
 - Uses Haversine formula for accurate distance calculations
 - Results are sorted by proximity to user location
-- Distances displayed in kilometers
+- Distances displayed in miles
 
 ### Error Handling
 - Graceful fallback to mock data when APIs are unavailable

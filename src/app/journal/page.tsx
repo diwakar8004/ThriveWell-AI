@@ -6,9 +6,8 @@ import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 import { Plus, Book, Calendar, Search, Trash2, Edit3 } from "lucide-react";
 
-// ReactQuill needs to be loaded client-side only
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.bubble.css"; // Using bubble theme for a cleaner look
+// TipTap editor needs to be loaded client-side only
+const TipTapEditor = dynamic(() => import("@/components/TipTapEditor"), { ssr: false });
 
 const SAMPLE_ENTRIES = [
   { id: "1", title: "Late Night Thoughts", content: "<p>The sky was unexpectedly clear tonight. I felt a sense of peace that I haven't felt in weeks...</p>", date: "Today", mood: "😊" },
@@ -105,8 +104,7 @@ export default function JournalPage() {
                         </div>
 
                         <div className="flex-1 overflow-hidden editor-container">
-                            <ReactQuill 
-                                theme="bubble"
+                            <TipTapEditor 
                                 value={currentEntry.content}
                                 onChange={(content) => setCurrentEntry({...currentEntry, content})}
                                 placeholder="Start writing from your heart..."
@@ -153,16 +151,19 @@ export default function JournalPage() {
 
       <SiteFooter />
       <style jsx global>{`
-        .editor-container .ql-editor {
+        .editor-container .ProseMirror {
             min-height: 300px;
             padding: 0;
             font-size: 1.125rem;
             line-height: 1.75;
+            outline: none;
         }
-        .editor-container .ql-editor.ql-blank::before {
-            left: 0;
+        .editor-container .ProseMirror p.is-editor-empty:first-child::before {
             color: #E2E2E0;
-            font-style: normal;
+            content: attr(data-placeholder);
+            float: left;
+            height: 0;
+            pointer-events: none;
         }
       `}</style>
     </div>

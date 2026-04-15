@@ -11,6 +11,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "ThriveWell AI | Your Safe Space for Mental Wellness",
   description: "A digital sanctuary for students and anyone feeling overwhelmed, invisible, or alone. Connect with empathetic AI and professional counselors.",
+  metadataBase: new URL('https://thrivewell-ai.vercel.app'),
   openGraph: {
     title: "ThriveWell AI",
     description: "Your digital sanctuary for mental wellness.",

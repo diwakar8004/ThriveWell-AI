@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 import MoodTracker from "@/components/dashboard/MoodTracker";
@@ -36,6 +37,12 @@ const RECENT_JOURNALS = [
 
 export default function DashboardPage() {
   const latestMood = MOOD_DATA[MOOD_DATA.length - 1].score;
+  const [chartReady, setChartReady] = useState(false);
+
+  useEffect(() => {
+    // Ensure chart renders after component mounts
+    setChartReady(true);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FDFBF7]">
@@ -97,34 +104,40 @@ export default function DashboardPage() {
                         </select>
                     </div>
                     
-                    <div className="h-[300px] w-full mt-4">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={MOOD_DATA}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E2E0" />
-                                <XAxis 
-                                    dataKey="date" 
-                                    axisLine={false} 
-                                    tickLine={false} 
-                                    tick={{ fontSize: 12, fill: '#94a3b8' }} 
-                                    dy={10}
-                                />
-                                <YAxis 
-                                    domain={[0, 10]} 
-                                    hide 
-                                />
-                                <Tooltip 
-                                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
-                                />
-                                <Line 
-                                    type="monotone" 
-                                    dataKey="score" 
-                                    stroke="#7C69EF" 
-                                    strokeWidth={4} 
-                                    dot={{ r: 6, fill: '#7C69EF', strokeWidth: 2, stroke: '#fff' }}
-                                    activeDot={{ r: 8 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
+                    <div className="h-[300px] w-full mt-4 relative" style={{ minHeight: '200px', minWidth: '300px' }}>
+                        {chartReady ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={MOOD_DATA}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E2E0" />
+                                    <XAxis 
+                                        dataKey="date" 
+                                        axisLine={false} 
+                                        tickLine={false} 
+                                        tick={{ fontSize: 12, fill: '#94a3b8' }} 
+                                        dy={10}
+                                    />
+                                    <YAxis 
+                                        domain={[0, 10]} 
+                                        hide 
+                                    />
+                                    <Tooltip 
+                                        contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                                    />
+                                    <Line 
+                                        type="monotone" 
+                                        dataKey="score" 
+                                        stroke="#7C69EF" 
+                                        strokeWidth={4} 
+                                        dot={{ r: 6, fill: '#7C69EF', strokeWidth: 2, stroke: '#fff' }}
+                                        activeDot={{ r: 8 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="flex items-center justify-center h-full">
+                                <div className="text-gray-400">Loading chart...</div>
+                            </div>
+                        )}
                     </div>
 
                     {latestMood < 4 && (
