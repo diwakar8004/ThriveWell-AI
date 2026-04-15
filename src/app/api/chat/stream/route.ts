@@ -1,14 +1,13 @@
-import { createOpenAI } from "@ai-sdk/openai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { convertToModelMessages, streamText, type ModelMessage, type UIMessage } from "ai";
 import { humanizeChatError } from "@/lib/chat-error";
 
-const openrouter = createOpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_API_KEY,
 });
 
-/** OpenRouter model id — override with OPENROUTER_MODEL in .env.local if the default free tier is rate-limited. */
-const DEFAULT_MODEL = "openrouter/auto";
+/** Google Gemini model id — using Gemini Flash for broad compatibility with the Generative AI API */
+const DEFAULT_MODEL = "gemini-flash-latest";
 
 const SYSTEM_PROMPT = `
 You are "ThriveWell," a world-class empathetic mental wellness companion. Your name reflects growth, resilience, and wellbeing. 
@@ -33,12 +32,12 @@ CONSTRAINTS:
 `.trim();
 
 export async function POST(req: Request) {
-  const key = process.env.OPENROUTER_API_KEY?.trim();
+  const key = process.env.GOOGLE_API_KEY?.trim();
   if (!key) {
     return new Response(
       JSON.stringify({
         error:
-          "Missing OPENROUTER_API_KEY. Add it to .env.local and restart `npm run dev`.",
+          "Missing GOOGLE_API_KEY. Add it to .env.local and restart `npm run dev`.",
       }),
       { status: 503, headers: { "Content-Type": "application/json" } }
     );
@@ -72,13 +71,11 @@ export async function POST(req: Request) {
     },
   ];
 
-  const modelId = process.env.OPENROUTER_MODEL?.trim() || DEFAULT_MODEL;
+  const modelId = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
 
-  // Default `openrouter("…")` uses OpenAI Responses API (`/responses`). OpenRouter only
-  // reliably supports the Chat Completions path for third-party models — use `.chat`.
-  // maxRetries: 0 avoids triple delays when the free model is 429 rate-limited upstream.
+  // Use Google Gemini for streaming responses
   const result = streamText({
-    model: openrouter.chat(modelId),
+    model: google(modelId),
     messages: [...instructionPreamble, ...modelMessages],
     maxRetries: 0,
   });

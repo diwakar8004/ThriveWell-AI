@@ -22,7 +22,7 @@ function indicatesRateLimited429(err: unknown, depth = 0): boolean {
 }
 
 const RATE_LIMIT_GUIDANCE =
-  "This free model is temporarily rate-limited on the provider’s side. Wait a minute and try again, set OPENROUTER_MODEL in .env.local to another model id from openrouter.ai/models, or add your Google AI key under OpenRouter → Integrations for higher limits (openrouter.ai/settings/integrations).";
+  "This free model is temporarily rate-limited on the provider’s side. Wait a minute and try again, or check your Google API quota and retry later.";
 
 /** Turn provider / transport errors into user-facing copy (no secrets). */
 export function humanizeChatError(error: Error): string {
@@ -37,7 +37,7 @@ export function humanizeChatError(error: Error): string {
       return RATE_LIMIT_GUIDANCE;
     }
     if (d.includes("no endpoints found")) {
-      return "OpenRouter has no provider for that model id (wrong name, retired, or unavailable). Remove OPENROUTER_MODEL to use the app default, or copy an exact id from openrouter.ai/models.";
+      return "The selected model is unavailable for your key. Check the model ID or remove any explicit model override.";
     }
     if (d.includes("developer instruction is not enabled")) {
       return "This model does not allow a separate system/instruction field. The app sends instructions inside the chat instead; if you still see this, try another model.";
@@ -49,15 +49,15 @@ export function humanizeChatError(error: Error): string {
   const raw = `${error.name} ${error.message}`.toLowerCase();
 
   if (raw.includes("failed after") && raw.includes("attempt") && raw.includes("provider returned error")) {
-    return "The AI provider could not finish after several attempts (often rate limits on free models). Wait a bit and try again, or change OPENROUTER_MODEL in .env.local.";
+    return "The AI provider could not finish after several attempts (often rate limits on free models). Wait a bit and try again, or check your API quota.";
   }
 
   if (raw.includes("openrouter") && (raw.includes("api") || raw.includes("key") || raw.includes("401"))) {
     return "OpenRouter key problem: set OPENROUTER_API_KEY in .env.local (openrouter.ai/keys), save, and restart the dev server.";
   }
 
-  if (raw.includes("google_generative_ai_api_key") || raw.includes("goog-api-key") || raw.includes("api key is missing")) {
-    return "Google AI key missing: set GOOGLE_GENERATIVE_AI_API_KEY in .env.local (Google AI Studio), save, and restart the dev server.";
+  if (raw.includes("google_generative_ai_api_key") || raw.includes("goog-api-key") || raw.includes("api key is missing") || raw.includes("google_api_key")) {
+    return "Google AI key missing: set GOOGLE_API_KEY in .env.local (Google AI Studio), save, and restart the dev server.";
   }
 
   if (raw.includes("resource_exhausted") || (raw.includes("billing") && raw.includes("google"))) {
@@ -69,27 +69,27 @@ export function humanizeChatError(error: Error): string {
   }
 
   if (raw.includes("rate_limit") || raw.includes("429")) {
-    return "Too many requests right now. Wait a moment and try again—or switch OPENROUTER_MODEL if the free tier is busy.";
+    return "Too many requests right now. Wait a moment and try again.";
   }
 
   if (raw.includes("invalid_api_key") || raw.includes("incorrect api key")) {
-    return "API key problem: check GOOGLE_GENERATIVE_AI_API_KEY (or OPENAI_API_KEY if you use OpenAI) in .env.local and restart the dev server.";
+    return "API key problem: check GOOGLE_API_KEY (or OPENAI_API_KEY if you use OpenAI) in .env.local and restart the dev server.";
   }
 
   if (raw.includes("no endpoints found")) {
-    return "OpenRouter has no provider for that model id. Fix OPENROUTER_MODEL in .env.local (exact id from openrouter.ai/models) or remove it to use the default.";
+    return "No provider was found for that model. Check your configured model or API provider settings, then restart the dev server.";
   }
 
   if (raw.includes("model") && raw.includes("not found")) {
-    return "That model isn’t available for your key. Set OPENROUTER_MODEL in .env.local to a valid id, or check the chat API route.";
+    return "That model isn’t available for your key. Check your configured model or API provider, and restart the dev server.";
   }
 
   if (raw.includes("invalid responses api request")) {
-    return "The AI service couldn’t accept this request. Try again in a moment; if it keeps happening, check OpenRouter status and your API key.";
+    return "The AI service couldn’t accept this request. Try again in a moment; if it keeps happening, check your API provider status and key.";
   }
 
   if (raw.includes("provider returned error")) {
-    return "OpenRouter reported a provider error (often rate limits or outages on free models). Wait a bit and try again, set OPENROUTER_MODEL in .env.local to another model, or check the server log for the exact upstream message.";
+    return "The AI provider reported an error (often rate limits or temporary issues). Wait a bit and try again, or check the server log for details.";
   }
 
   if (raw.includes("developer instruction is not enabled")) {
