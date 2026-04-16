@@ -1,13 +1,13 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createHuggingFace } from "@ai-sdk/huggingface";
 import { convertToModelMessages, streamText, type ModelMessage, type UIMessage } from "ai";
 import { humanizeChatError } from "@/lib/chat-error";
 
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_API_KEY,
+const huggingface = createHuggingFace({
+  apiKey: process.env.HUGGINGFACE_API_KEY,
 });
 
-/** Google Gemini model id — using Gemini Flash for broad compatibility with the Generative AI API */
-const DEFAULT_MODEL = "gemini-flash-latest";
+/** Default Hugging Face model id for a responsive chat-style assistant */
+const DEFAULT_MODEL = "meta-llama/Llama-3.1-8B-Instruct";
 
 const SYSTEM_PROMPT = `
 You are "ThriveWell," a world-class empathetic mental wellness companion. Your name reflects growth, resilience, and wellbeing. 
@@ -32,12 +32,12 @@ CONSTRAINTS:
 `.trim();
 
 export async function POST(req: Request) {
-  const key = process.env.GOOGLE_API_KEY?.trim();
+  const key = process.env.HUGGINGFACE_API_KEY?.trim();
   if (!key) {
     return new Response(
       JSON.stringify({
         error:
-          "Missing GOOGLE_API_KEY. Add it to .env.local and restart `npm run dev`.",
+          "Missing HUGGINGFACE_API_KEY. Add it to .env.local and restart `npm run dev`.",
       }),
       { status: 503, headers: { "Content-Type": "application/json" } }
     );
@@ -54,9 +54,6 @@ export async function POST(req: Request) {
 
   const modelMessages = await convertToModelMessages(messages);
 
-  // google/gemma-3-12b-it (via Google AI Studio) rejects separate system/developer
-  // instructions ("Developer instruction is not enabled"). Embed the system prompt as
-  // an initial user + assistant turn instead of `system:`.
   const instructionPreamble: ModelMessage[] = [
     {
       role: "user",
@@ -71,11 +68,10 @@ export async function POST(req: Request) {
     },
   ];
 
-  const modelId = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
+  const modelId = process.env.HUGGINGFACE_MODEL?.trim() || DEFAULT_MODEL;
 
-  // Use Google Gemini for streaming responses
   const result = streamText({
-    model: google(modelId),
+    model: huggingface(modelId),
     messages: [...instructionPreamble, ...modelMessages],
     maxRetries: 0,
   });

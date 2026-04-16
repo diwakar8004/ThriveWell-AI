@@ -56,16 +56,16 @@ export function humanizeChatError(error: Error): string {
     return "OpenRouter key problem: set OPENROUTER_API_KEY in .env.local (openrouter.ai/keys), save, and restart the dev server.";
   }
 
-  if (raw.includes("google_generative_ai_api_key") || raw.includes("goog-api-key") || raw.includes("api key is missing") || raw.includes("google_api_key")) {
-    return "Google AI key missing: set GOOGLE_API_KEY in .env.local (Google AI Studio), save, and restart the dev server.";
+  if (raw.includes("huggingface_api_key") || raw.includes("api key is missing") || raw.includes("huggingface_api_key")) {
+    return "Hugging Face key missing: set HUGGINGFACE_API_KEY in .env.local (Hugging Face), save, and restart the dev server.";
   }
 
-  if (raw.includes("resource_exhausted") || (raw.includes("billing") && raw.includes("google"))) {
-    return "Google AI reported a quota or billing limit. Check usage and billing in Google Cloud / AI Studio for this API key, then try again.";
+  if (raw.includes("resource_exhausted") || (raw.includes("billing") && raw.includes("huggingface"))) {
+    return "Hugging Face reported a quota or billing limit. Check usage and billing on Hugging Face for this API key, then try again.";
   }
 
   if (raw.includes("insufficient_quota") || raw.includes("exceeded your current quota")) {
-    return "The AI couldn’t reply: your API account has no usable quota left. For Google (Gemini), check AI Studio / Cloud billing and quotas; for OpenAI, check platform.openai.com → Billing. Then try again.";
+    return "The AI couldn’t reply: your API account has no usable quota left. For Hugging Face, check billing and quotas on Hugging Face; for OpenAI, check platform.openai.com → Billing. Then try again.";
   }
 
   if (raw.includes("rate_limit") || raw.includes("429")) {
@@ -73,7 +73,7 @@ export function humanizeChatError(error: Error): string {
   }
 
   if (raw.includes("invalid_api_key") || raw.includes("incorrect api key")) {
-    return "API key problem: check GOOGLE_API_KEY (or OPENAI_API_KEY if you use OpenAI) in .env.local and restart the dev server.";
+    return "API key problem: check HUGGINGFACE_API_KEY (or OPENAI_API_KEY if you use OpenAI) in .env.local and restart the dev server.";
   }
 
   if (raw.includes("no endpoints found")) {

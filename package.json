@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.62",
+    "@ai-sdk/huggingface": "^1.0.43",
     "@ai-sdk/openai": "^3.0.52",
     "@ai-sdk/react": "^3.0.163",
     "@next-auth/supabase-adapter": "^0.2.1",
